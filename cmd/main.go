@@ -5,12 +5,43 @@ import (
 	"math"
 	"net/http"
 	"strings"
+	"os"
+
+	"encoding/csv"
 
 	lib "github.com/lmpizarro/gorofex/pkg/lib"
 	"gonum.org/v1/gonum/stat/distuv"
 
-	"env"
 )
+
+type credentials struct {
+    User string
+    Password string
+    Account string
+}
+
+func read_credentials() credentials {
+
+    csvFile, err := os.Open("./env.csv")
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Successfully Opened CSV file")
+	defer csvFile.Close()
+
+    csvReader := csv.NewReader(csvFile)
+	csvLines, err := csvReader.ReadAll()
+    if err != nil {
+        panic(err)
+    }
+    line := csvLines[0]
+    emp := credentials{
+        User: line[0],
+        Password: line[1],
+		Account: line[2],
+    }
+	return emp
+}
 
 // https://golangdocs.com/golang-finance-go-package-stock-quote-options-chart
 
@@ -86,8 +117,9 @@ func token(user, password string) string {
 
 func main() {
 
-	user := ""
-	password := ""
+	cred := read_credentials()
+	user := cred.User
+	password := cred.Password
 
 	token := token(user, password)
 
