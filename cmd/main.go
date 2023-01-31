@@ -8,6 +8,8 @@ import (
 
 	lib "github.com/lmpizarro/gorofex/pkg/lib"
 	"gonum.org/v1/gonum/stat/distuv"
+
+	"env"
 )
 
 // https://golangdocs.com/golang-finance-go-package-stock-quote-options-chart
@@ -84,9 +86,8 @@ func token(user, password string) string {
 
 func main() {
 
-	user := "lmpizarro7680"
-	password := "nbpzpA9$"
-	// account:= "REM7680"
+	user := ""
+	password := ""
 
 	token := token(user, password)
 
