@@ -5,6 +5,10 @@ License Apache 2.0
 #### code
 
 `
+import (
+
+	"strings"
+)
 
 // contains checks if a string is present in a slice
 func contains(s []string, str string) bool {
