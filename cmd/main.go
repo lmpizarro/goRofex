@@ -20,9 +20,9 @@ type credentials struct {
     Account string
 }
 
-func read_credentials() credentials {
+func read_credentials(file string) credentials {
 
-    csvFile, err := os.Open("./env.csv")
+    csvFile, err := os.Open(file)
 	if err != nil {
 		panic(err)
 	}
@@ -117,7 +117,7 @@ func token(user, password string) string {
 
 func main() {
 
-	cred := read_credentials()
+	cred := read_credentials("./env.csv")
 	user := cred.User
 	password := cred.Password
 
