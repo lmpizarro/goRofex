@@ -1,0 +1,1 @@
+https://blog.boot.dev/golang/empty-vs-nil-slices-golang/
