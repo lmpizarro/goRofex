@@ -5,6 +5,17 @@ License Apache 2.0
 #### code
 
 `
+
+// contains checks if a string is present in a slice
+func contains(s []string, str string) bool {
+	for _, v := range s {
+		if strings.Contains(str, v) {
+			return true
+		}
+	}
+	return false
+}
+
 	// all_instruments, _ := lib.Get_All_Instruments(token)
 	// s := []string{"SOJ.ROS", "TRI.ROS", "MAI.ROS", "MERV - XMEV", "DLR", "ORO", "WTI", ".MIN", "CNH", ".CME", "CONT", "I."}
 	// contracts := lib.All_options_contract("MAI.ROS", all_instruments)

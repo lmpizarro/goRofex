@@ -42,15 +42,6 @@ func read_credentials(file string) credentials {
 }
 
 
-// contains checks if a string is present in a slice
-func contains(s []string, str string) bool {
-	for _, v := range s {
-		if strings.Contains(str, v) {
-			return true
-		}
-	}
-	return false
-}
 
 func token(user, password string) string {
 	r, err := http.NewRequest("POST", lib.Url_Auth, nil)
