@@ -13,6 +13,7 @@ const Url = "https://api.remarkets.primary.com.ar/"
 const auth = "auth/getToken"
 const instruments = "rest/instruments/all"
 const market_data = "rest/marketdata/get?marketId=ROFX&symbol=%v&entries=BI,OF,LA,OP,CL,HI,LO,SE,OI&depth=%v"
+
 /*
 BI: BIDS Mejor oferta de compra en el Book
 OF: OFFERS Mejor oferta de venta en el Book
@@ -76,7 +77,7 @@ type RespAllInstruments struct {
 func Unmarshal_All_Instruments(body []byte) ([]string, error) {
 	var result RespAllInstruments
 	if err := json.Unmarshal(body, &result); err != nil { // Parse []byte to the go struct pointer
-		return nil , fmt.Errorf("can not unmarshal json")
+		return nil, fmt.Errorf("can not unmarshal json")
 	}
 
 	var list_of_instruments []string
@@ -99,19 +100,18 @@ func Get_All_Instruments(token string) ([]string, error) {
 	return Unmarshal_All_Instruments(response)
 }
 
-
 type marketData struct {
 	Status     string `json:"status"`
 	MarketData struct {
 		Oi struct {
 			Price float64 `json:"price"`
-			Size  int         `json:"size"`
-			Date  int64       `json:"date"`
+			Size  int     `json:"size"`
+			Date  int64   `json:"date"`
 		} `json:"OI"`
 		Cl struct {
-			Price float64     `json:"price"`
-			Size  int `json:"size"`
-			Date  int64       `json:"date"`
+			Price float64 `json:"price"`
+			Size  int     `json:"size"`
+			Date  int64   `json:"date"`
 		} `json:"CL"`
 		Hi float64 `json:"Hi"`
 		Lo float64 `json:"LO"`
@@ -120,9 +120,9 @@ type marketData struct {
 			Size  int     `json:"size"`
 		} `json:"OF"`
 		Se struct {
-			Price float64     `json:"price"`
-			Size  int64 `json:"size"`
-			Date  int64       `json:"date"`
+			Price float64 `json:"price"`
+			Size  int64   `json:"size"`
+			Date  int64   `json:"date"`
 		} `json:"SE"`
 		La struct {
 			Price float64 `json:"price"`
@@ -139,25 +139,30 @@ type marketData struct {
 	Aggregated bool `json:"aggregated"`
 }
 
-func Get_Market_Data(contract, token string) error {
+func Get_Market_Data(contract, token string) (marketData, error) {
 
 	url := MarketDataUrl(contract, 2)
 	res, err := rfx_get_req(url, token)
-	if err != nil {
-		return fmt.Errorf("error %v", err)
-	}
 	var unmarshaled_data marketData
+	if err != nil {
+		return unmarshaled_data, fmt.Errorf("error %v", err)
+	}
 	err = json.Unmarshal(res, &unmarshaled_data)
-	if unmarshaled_data.Status == "OK" {
-		fmt.Printf("O %v H %v C %v L %v\n",
-			unmarshaled_data.MarketData.Op,
-			unmarshaled_data.MarketData.Hi,
-			unmarshaled_data.MarketData.Cl.Price,
-			unmarshaled_data.MarketData.Lo,
-		)
+	if unmarshaled_data.Status != "OK" {
+
+		return unmarshaled_data, fmt.Errorf("error unmarshall")
+
+	}
+	return unmarshaled_data, err
+}
+
+func Last_Price(ticker, token string) (float64, error) {
+	data, err := Get_Market_Data(ticker, token)
+	if err != nil {
+		return 0, err
 	}
 
-	return err
+	return data.MarketData.La.Price, err
 }
 
 func map_options(key string) []string {
