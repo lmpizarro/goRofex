@@ -165,6 +165,7 @@ func Last_Price(ticker, token string) (float64, error) {
 	return data.MarketData.La.Price, err
 }
 
+
 func map_options(key string) []string {
 	x := make(map[string][]string)
 
