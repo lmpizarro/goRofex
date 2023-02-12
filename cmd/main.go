@@ -37,17 +37,10 @@ func main() {
 	// fmt.Scanln()
 
 	map_messages, _ := lib.Build_messages("DLR/MAY23", token)
-	message, _ := lib.Message_CL(map_messages)
-	fmt.Println(message)
-	message, _ = lib.Message_LA(map_messages)
-	fmt.Println(message)
-	message, _ = lib.Message_OHLC(map_messages)
-	fmt.Println(message)
-	message, _ = lib.Message_OF(map_messages)
-	fmt.Println(message)
-	message, _ = lib.Message_BI(map_messages)
-	fmt.Println(message)
 
+	for k := range map_messages {
+		fmt.Println(k, ".... ", map_messages[k])
+	}
 
-
+	fmt.Println(lib.Message_CL(map_messages))
 }
