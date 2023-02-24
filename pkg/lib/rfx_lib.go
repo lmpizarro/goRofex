@@ -195,6 +195,7 @@ type optionContract struct {
 	Type          string
 	MaturityMonth string
 	MaturityDate  string
+	TtmInDays 	  float64
 }
 
 func AllOptionsContract(especie string, all_instruments []string) []optionContract {
@@ -214,6 +215,8 @@ func AllOptionsContract(especie string, all_instruments []string) []optionContra
 			optContract := optionContract{Symbol: splited1[0], Type: splited1[2], K: strike, MaturityMonth: splited2[1]}
 			month_index := Meses[optContract.MaturityMonth[0:3]]
 			optContract.MaturityDate = fmt.Sprintf("%v-%v-%v", "2023", month_index, "28")
+			_, secondsTtm := ParserStringDate(optContract.MaturityDate)
+			optContract.TtmInDays = TtmInDays(secondsTtm)
 			contracts = append(contracts, optContract)
 		}
 	}
