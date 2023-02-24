@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -188,18 +189,29 @@ func parseOptionContract(e string) {
 	fmt.Println(e, especie, month, year, K, tipo)
 }
 
-func AllOptionsContract(especie string, all_instruments []string) []string {
+type optionContract struct {
+	Symbol string
+	K float64
+	Type string
+	Maturity string
+}
+
+func AllOptionsContract(especie string, all_instruments []string) []optionContract {
 	regexCall := mapOptions(especie)[1]
 	regexPut := mapOptions(especie)[0]
 	reCall, _ := regexp.Compile(regexCall)
 	rePut, _ := regexp.Compile(regexPut)
-	var contracts []string
+	var contracts []optionContract
 
 	for _, e := range all_instruments {
 		// fmt.Println(e)
 		matched := reCall.MatchString(e) || rePut.MatchString(e)
 		if matched {
-			contracts = append(contracts, e)
+			splited1 := strings.Split(e, " ")
+			strike, _ := strconv.ParseFloat(splited1[1], 64)
+			splited2 := strings.Split(splited1[0], "/")
+			optContract := optionContract{Symbol: splited1[0], Type: splited1[2], K: strike, Maturity: splited2[1]}
+			contracts = append(contracts, optContract)
 		}
 	}
 	return contracts
