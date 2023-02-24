@@ -74,7 +74,7 @@ type RespAllInstruments struct {
 
 // https://mholt.github.io/json-to-go/
 
-func Unmarshal_All_Instruments(body []byte) ([]string, error) {
+func UnmarshalAllInstruments(body []byte) ([]string, error) {
 	var result RespAllInstruments
 	if err := json.Unmarshal(body, &result); err != nil { // Parse []byte to the go struct pointer
 		return nil, fmt.Errorf("can not unmarshal json")
@@ -91,13 +91,13 @@ func Unmarshal_All_Instruments(body []byte) ([]string, error) {
 	return list_of_instruments, nil
 }
 
-func Get_All_Instruments(token string) ([]string, error) {
+func GetAllInstruments(token string) ([]string, error) {
 	response, err := rfx_get_req(Url_All_Instruments, token)
 
 	if err != nil {
 		return nil, fmt.Errorf("error %v", err)
 	}
-	return Unmarshal_All_Instruments(response)
+	return UnmarshalAllInstruments(response)
 }
 
 type marketData struct {
@@ -139,7 +139,7 @@ type marketData struct {
 	Aggregated bool `json:"aggregated"`
 }
 
-func Get_Market_Data(contract, token string) (marketData, error) {
+func GetMarketData(contract, token string) (marketData, error) {
 
 	url := MarketDataUrl(contract, 2)
 	res, err := rfx_get_req(url, token)
@@ -156,8 +156,8 @@ func Get_Market_Data(contract, token string) (marketData, error) {
 	return unmarshaled_data, err
 }
 
-func Last_Price(ticker, token string) (float64, error) {
-	data, err := Get_Market_Data(ticker, token)
+func LastPrice(ticker, token string) (float64, error) {
+	data, err := GetMarketData(ticker, token)
 	if err != nil {
 		return 0, err
 	}
@@ -165,8 +165,7 @@ func Last_Price(ticker, token string) (float64, error) {
 	return data.MarketData.La.Price, err
 }
 
-
-func map_options(key string) []string {
+func mapOptions(key string) []string {
 	x := make(map[string][]string)
 
 	x["SOJ.ROS"] = append(x["SOJ.ROS"], `^SOJ.ROS.*P$`)
@@ -177,7 +176,7 @@ func map_options(key string) []string {
 	return x[key]
 }
 
-func parse_option_contract(e string) {
+func parseOptionContract(e string) {
 	split1 := strings.Split(e, "/")
 	split2 := strings.Split(split1[1], " ")
 	especie := split1[0]
@@ -189,17 +188,16 @@ func parse_option_contract(e string) {
 	fmt.Println(e, especie, month, year, K, tipo)
 }
 
-func All_options_contract(especie string, all_instruments []string) []string {
-	filterC := map_options(especie)[1]
-	filterP := map_options(especie)[0]
-	re1, _ := regexp.Compile(filterC)
-	re2, _ := regexp.Compile(filterP)
+func AllOptionsContract(especie string, all_instruments []string) []string {
+	regexCall := mapOptions(especie)[1]
+	regexPut := mapOptions(especie)[0]
+	reCall, _ := regexp.Compile(regexCall)
+	rePut, _ := regexp.Compile(regexPut)
 	var contracts []string
 
 	for _, e := range all_instruments {
-
 		// fmt.Println(e)
-		matched := re1.MatchString(e) || re2.MatchString(e)
+		matched := reCall.MatchString(e) || rePut.MatchString(e)
 		if matched {
 			contracts = append(contracts, e)
 		}

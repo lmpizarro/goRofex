@@ -16,11 +16,11 @@ func scan(token string) {
 			"DLR/JUL23", "DLR/AGO23", "DLR/SEP23",
 			"DLR/NOV23", "DLR/DIC23",
 		} {
-			cl, _ := lib.Last_Price(ticker, token)
+			cl, _ := lib.LastPrice(ticker, token)
 			fmt.Println(ticker, " ", cl)
 			time.Sleep(100 * time.Millisecond)
 		}
-		time.Sleep(1 * time.Second)
+		time.Sleep(5 * time.Second)
 		fmt.Println("Press the Enter Key to stop anytime")
 	}
 }
@@ -36,11 +36,9 @@ func main() {
 	// go scan(token)
 	// fmt.Scanln()
 
-	map_messages, _ := lib.Build_messages("DLR/MAY23", token)
+	map_messages, _ := lib.Build_messages("GGAL/FEB23", token)
 
 	for k := range map_messages {
 		fmt.Println(k, ".... ", map_messages[k])
 	}
-
-	fmt.Println(lib.Message_CL(map_messages))
 }
