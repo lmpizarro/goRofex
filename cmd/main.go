@@ -21,25 +21,24 @@ func scan() {
 			fmt.Println(ticker, " ", cl)
 			time.Sleep(100 * time.Millisecond)
 		}
-		time.Sleep(30* time.Second)
+		time.Sleep(30 * time.Second)
 		fmt.Println("Press the Enter Key to stop anytime")
 	}
 }
 
 func main() {
 
-	go scan()
-	fmt.Scanln()
-	panic("")
-
+	// go scan()
+	// fmt.Scanln()
+	// panic("")
 
 	token := lib.Login()
 	allInstruments, _ := lib.GetAllInstruments(token)
 
 	contracts := lib.AllOptionsContract("SOJ.ROS", allInstruments)
 	for _, contract := range contracts {
-		lp, _:= lib.LastPrice(contract.Symbol, token)
-		fmt.Println(contract.Symbol, lp)
+		lprice, _ := lib.LastPrice(contract.Symbol, token)
+		fmt.Println(contract.Symbol, lprice, contract.K, contract.MaturityDate)
 	}
 
 	map_messages, _ := lib.Build_messages("GGAL/FEB23", lib.Login())

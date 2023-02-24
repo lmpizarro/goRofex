@@ -190,10 +190,11 @@ func parseOptionContract(e string) {
 }
 
 type optionContract struct {
-	Symbol string
-	K float64
-	Type string
-	Maturity string
+	Symbol        string
+	K             float64
+	Type          string
+	MaturityMonth string
+	MaturityDate  string
 }
 
 func AllOptionsContract(especie string, all_instruments []string) []optionContract {
@@ -210,9 +211,14 @@ func AllOptionsContract(especie string, all_instruments []string) []optionContra
 			splited1 := strings.Split(e, " ")
 			strike, _ := strconv.ParseFloat(splited1[1], 64)
 			splited2 := strings.Split(splited1[0], "/")
-			optContract := optionContract{Symbol: splited1[0], Type: splited1[2], K: strike, Maturity: splited2[1]}
+			optContract := optionContract{Symbol: splited1[0], Type: splited1[2], K: strike, MaturityMonth: splited2[1]}
+			month_index := Meses[optContract.MaturityMonth[0:3]]
+			optContract.MaturityDate = fmt.Sprintf("%v-%v-%v", "2023", month_index, "28")
 			contracts = append(contracts, optContract)
 		}
 	}
 	return contracts
 }
+
+var Meses = map[string]string{"ENE": "01", "FEB": "02", "MAR": "03", "ABR": "04", "MAY": "05", "JUN": "06",
+	"JUL": "07", "AGO": "08", "SEP": "9", "OCT": "10", "NOV": "11", "DIC": "12"}
