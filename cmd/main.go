@@ -26,17 +26,10 @@ func scan(token string) {
 }
 
 func main() {
-
-	cred := lib.Read_credentials("./env.csv")
-	user := cred.User
-	password := cred.Password
-
-	token := lib.Token(user, password)
-
 	// go scan(token)
 	// fmt.Scanln()
 
-	map_messages, _ := lib.Build_messages("GGAL/FEB23", token)
+	map_messages, _ := lib.Build_messages("GGAL/FEB23", lib.Login())
 
 	for k := range map_messages {
 		fmt.Println(k, ".... ", map_messages[k])

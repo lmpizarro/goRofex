@@ -38,14 +38,14 @@ func Read_credentials(file string) credentials {
 	return emp
 }
 
-func Token(user, password string) string {
+func Token(cred *credentials) string {
 	r, err := http.NewRequest("POST", Url_Auth, nil)
 
 	if err != nil {
 		panic(err)
 	}
-	r.Header.Add("X-Password", password)
-	r.Header.Add("X-Username", user)
+	r.Header.Add("X-Password", cred.Password)
+	r.Header.Add("X-Username", cred.User)
 	client := &http.Client{}
 	res, err := client.Do(r)
 	if err != nil {
@@ -59,4 +59,12 @@ func Token(user, password string) string {
 
 	token := res.Header["X-Auth-Token"]
 	return token[0]
+}
+
+func Login() string {
+
+    cred := Read_credentials("./env.csv")
+	return  Token(&cred)
+
+
 }
