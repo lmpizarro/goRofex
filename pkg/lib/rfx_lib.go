@@ -185,8 +185,18 @@ func parseOptionContract(e string) optionContract {
 	year := "20" + fecha[3:5]
 	K, _ := strconv.ParseFloat(split2[1], 64)
 	tipo := split2[2]
+	month_index := MesesToString[month]
+	maturityDate := fmt.Sprintf("%v-%v-%v", year, month_index, "20")
+	_, secondsTtm := ParserStringDate(maturityDate)
+	ttmInDays := TtmInDays(secondsTtm)
+
+
 	fmt.Println(e, especie, month, year, K, tipo)
-	return optionContract{Underlying: especie, Position:e, K: K, Type: tipo}
+	return optionContract{Underlying: especie,
+							Position:e, K: K,
+							Type: tipo, MaturityMonth: month,
+						MaturityDate: maturityDate,
+					TtmInDays: ttmInDays,}
 }
 
 
@@ -223,17 +233,9 @@ func AllOptionsContract(underlying string, all_instruments []string) []optionCon
 	for _, instrument := range all_instruments {
 		matched := reCall.MatchString(instrument) || rePut.MatchString(instrument)
 		if matched {
-			splited1 := strings.Split(instrument, " ")
-			parseOptionContract(instrument)
+			optContract := parseOptionContract(instrument)
 
-			strike, _ := strconv.ParseFloat(splited1[1], 64)
-			splited2 := strings.Split(splited1[0], "/")
-			optContract := optionContract{Underlying: splited1[0], Type: splited1[2], K: strike, MaturityMonth: splited2[1]}
-			optContract.Position = instrument
-			month_index := MesesToString[optContract.MaturityMonth[0:3]]
-			optContract.MaturityDate = fmt.Sprintf("%v-%v-%v", "2023", month_index, "20")
-			_, secondsTtm := ParserStringDate(optContract.MaturityDate)
-			optContract.TtmInDays = TtmInDays(secondsTtm)
+			fmt.Printf("%+v", optContract)
 			contracts = append(contracts, optContract)
 		}
 	}
