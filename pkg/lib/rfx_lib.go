@@ -175,6 +175,12 @@ type optionContract struct {
 	TtmInDays     float64
 }
 
+type OptionParameters struct {
+	Tipo                 string
+	S, K, T, R, Sigma, Q float64
+}
+
+
 func parseOptionContract(e string) optionContract {
 	split1 := strings.Split(e, "/")
 	split2 := strings.Split(split1[1], " ")
