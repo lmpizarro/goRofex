@@ -35,10 +35,12 @@ func main() {
 	token := lib.Login()
 	allInstruments, _ := lib.GetAllInstruments(token)
 
-	contracts := lib.AllOptionsContract("SOJ.ROS", allInstruments)
-	for _, contract := range contracts {
-		lprice, _ := lib.LastPrice(contract.Symbol, token)
-		fmt.Printf("%s %s %.2f %.2f %.2f\n", contract.Symbol, contract.Type, lprice, contract.K, contract.TtmInDays / 365.0)
+	optionContracts := lib.AllOptionsContract("MAI.ROS", allInstruments)
+	for _, contract := range optionContracts {
+		lprice, _ := lib.LastPrice(contract.Underlying, token)
+		op, _ := lib.LastPrice(contract.Position, token)
+		fmt.Printf("%s %d %s %.2f %.2f %.2f\n", contract.Underlying, int(contract.K), contract.Type,
+			lprice, contract.TtmInDays/365.0, op)
 	}
 	panic("")
 	map_messages, _ := lib.Build_messages("GGAL/FEB23", lib.Login())

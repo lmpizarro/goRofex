@@ -15,6 +15,15 @@ const auth = "auth/getToken"
 const instruments = "rest/instruments/all"
 const market_data = "rest/marketdata/get?marketId=ROFX&symbol=%v&entries=BI,OF,LA,OP,CL,HI,LO,SE,OI&depth=%v"
 
+var MesesToString = map[string]string{"ENE": "01", "FEB": "02", "MAR": "03", "ABR": "04", "MAY": "05", "JUN": "06",
+	"JUL": "07", "AGO": "08", "SEP": "9", "OCT": "10", "NOV": "11", "DIC": "12"}
+
+var MesesToInt = map[string]int{"ENE": 1, "FEB": 2, "MAR": 3, "ABR": 4, "MAY": 5, "JUN": 6,
+	"JUL": 7, "AGO": 8, "SEP": 9, "OCT": 10, "NOV": 11, "DIC": 2}
+
+var MesesToMonth = map[string]string{"ENE": "JAN", "FEB": "FEB", "MAR": "MAR", "ABR": "APR", "MAY": "05", "JUN": "06",
+	"JUL": "07", "AGO": "AUG", "SEP": "SEP", "OCT": "OCT", "NOV": "NOV", "DIC": "DIC"}
+
 /*
 BI: BIDS Mejor oferta de compra en el Book
 OF: OFFERS Mejor oferta de venta en el Book
@@ -92,15 +101,6 @@ func UnmarshalAllInstruments(body []byte) ([]string, error) {
 	return list_of_instruments, nil
 }
 
-func GetAllInstruments(token string) ([]string, error) {
-	response, err := rfx_get_req(Url_All_Instruments, token)
-
-	if err != nil {
-		return nil, fmt.Errorf("error %v", err)
-	}
-	return UnmarshalAllInstruments(response)
-}
-
 type marketData struct {
 	Status     string `json:"status"`
 	MarketData struct {
@@ -166,55 +166,72 @@ func LastPrice(ticker, token string) (float64, error) {
 	return data.MarketData.La.Price, err
 }
 
-func mapOptions(key string) []string {
-	x := make(map[string][]string)
-
-	x["SOJ.ROS"] = append(x["SOJ.ROS"], `^SOJ.ROS.*P$`)
-	x["SOJ.ROS"] = append(x["SOJ.ROS"], `^SOJ.ROS.*C$`)
-
-	x["MAI.ROS"] = append(x["MAI.ROS"], `^MAI.ROS.*P$`)
-	x["MAI.ROS"] = append(x["MAI.ROS"], `^MAI.ROS.*C$`)
-	return x[key]
+type optionContract struct {
+	Underlying    string
+	Position      string
+	K             float64
+	Type          string
+	MaturityMonth string
+	MaturityDate  string
+	TtmInDays     float64
 }
 
-func parseOptionContract(e string) {
+func parseOptionContract(e string) optionContract {
 	split1 := strings.Split(e, "/")
 	split2 := strings.Split(split1[1], " ")
 	especie := split1[0]
 	fecha := split2[0]
 	month := fecha[0:3]
 	year := "20" + fecha[3:5]
-	K := split2[1]
+	K, _ := strconv.ParseFloat(split2[1], 64)
 	tipo := split2[2]
 	fmt.Println(e, especie, month, year, K, tipo)
+	return optionContract{Underlying: especie, Position:e, K: K, Type: tipo}
 }
 
-type optionContract struct {
-	Symbol        string
-	K             float64
-	Type          string
-	MaturityMonth string
-	MaturityDate  string
-	TtmInDays 	  float64
+
+func mapOptions(key string) []string {
+	mapForOptions := make(map[string][]string)
+
+	mapForOptions["SOJ.ROS"] = append(mapForOptions["SOJ.ROS"], `^SOJ.ROS.*P$`)
+	mapForOptions["SOJ.ROS"] = append(mapForOptions["SOJ.ROS"], `^SOJ.ROS.*C$`)
+
+	mapForOptions["MAI.ROS"] = append(mapForOptions["MAI.ROS"], `^MAI.ROS.*P$`)
+	mapForOptions["MAI.ROS"] = append(mapForOptions["MAI.ROS"], `^MAI.ROS.*C$`)
+
+	mapForOptions["TRI.ROS"] = append(mapForOptions["TRI.ROS"], `^TRI.ROS.*P$`)
+	mapForOptions["TRI.ROS"] = append(mapForOptions["TRI.ROS"], `^TRI.ROS.*C$`)
+
+	return mapForOptions[key]
 }
 
-func AllOptionsContract(especie string, all_instruments []string) []optionContract {
-	regexCall := mapOptions(especie)[1]
-	regexPut := mapOptions(especie)[0]
+func compileRegExForUnderlying(underlying string) (*regexp.Regexp, *regexp.Regexp) {
+	const regExForCall = 1
+	const regExForPut = 0
+	regexCall := mapOptions(underlying)[regExForCall]
+	regexPut := mapOptions(underlying)[regExForPut]
 	reCall, _ := regexp.Compile(regexCall)
 	rePut, _ := regexp.Compile(regexPut)
-	var contracts []optionContract
 
-	for _, e := range all_instruments {
-		// fmt.Println(e)
-		matched := reCall.MatchString(e) || rePut.MatchString(e)
+	return reCall, rePut
+}
+
+func AllOptionsContract(underlying string, all_instruments []string) []optionContract {
+	reCall, rePut := compileRegExForUnderlying(underlying)
+
+	var contracts []optionContract
+	for _, instrument := range all_instruments {
+		matched := reCall.MatchString(instrument) || rePut.MatchString(instrument)
 		if matched {
-			splited1 := strings.Split(e, " ")
+			splited1 := strings.Split(instrument, " ")
+			parseOptionContract(instrument)
+
 			strike, _ := strconv.ParseFloat(splited1[1], 64)
 			splited2 := strings.Split(splited1[0], "/")
-			optContract := optionContract{Symbol: splited1[0], Type: splited1[2], K: strike, MaturityMonth: splited2[1]}
-			month_index := Meses[optContract.MaturityMonth[0:3]]
-			optContract.MaturityDate = fmt.Sprintf("%v-%v-%v", "2023", month_index, "28")
+			optContract := optionContract{Underlying: splited1[0], Type: splited1[2], K: strike, MaturityMonth: splited2[1]}
+			optContract.Position = instrument
+			month_index := MesesToString[optContract.MaturityMonth[0:3]]
+			optContract.MaturityDate = fmt.Sprintf("%v-%v-%v", "2023", month_index, "20")
 			_, secondsTtm := ParserStringDate(optContract.MaturityDate)
 			optContract.TtmInDays = TtmInDays(secondsTtm)
 			contracts = append(contracts, optContract)
@@ -223,5 +240,10 @@ func AllOptionsContract(especie string, all_instruments []string) []optionContra
 	return contracts
 }
 
-var Meses = map[string]string{"ENE": "01", "FEB": "02", "MAR": "03", "ABR": "04", "MAY": "05", "JUN": "06",
-	"JUL": "07", "AGO": "08", "SEP": "9", "OCT": "10", "NOV": "11", "DIC": "12"}
+func GetAllInstruments(token string) ([]string, error) {
+	response, err := rfx_get_req(Url_All_Instruments, token)
+	if err != nil {
+		return nil, fmt.Errorf("error %v", err)
+	}
+	return UnmarshalAllInstruments(response)
+}
