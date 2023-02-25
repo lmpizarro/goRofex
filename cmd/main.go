@@ -38,7 +38,7 @@ func main() {
 	optionContracts := lib.AllOptionsContract("TRI.ROS", allInstruments)
 	for _, contract := range optionContracts {
 		op, _ := lib.LastPrice(contract.Position, token)
-		fmt.Printf("%s %d %s %.2f %.2f\n", contract.Underlying, int(contract.K), contract.Type, contract.TtmInDays/365.0, op)
+		fmt.Printf("%s %.2f %.2f\n", contract.Position, contract.TtmInDays/365.0, op)
 	}
 	panic("")
 	map_messages, _ := lib.Build_messages("GGAL/FEB23", lib.Login())
