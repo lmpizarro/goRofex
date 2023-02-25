@@ -22,7 +22,6 @@ func ParserStringDate(date string) (time.Time, int64) {
 	splited := strings.Split(date, "-")
 	month := parseMonth(splited[1])
 	date = fmt.Sprintf("%s-%s-%s", splited[0], month, splited[2])
-	fmt.Println(date)
 	dt, err := time.Parse("2006-01-02", date)
 	if err != nil {
 		panic("could not parse expiration- correct format is yyyy-mm-dd")

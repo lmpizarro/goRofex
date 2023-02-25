@@ -35,7 +35,7 @@ func main() {
 	token := lib.Login()
 	allInstruments, _ := lib.GetAllInstruments(token)
 
-	optionContracts := lib.AllOptionsContract("MAI.ROS", allInstruments)
+	optionContracts := lib.AllOptionsContract("TRI.ROS", allInstruments)
 	for _, contract := range optionContracts {
 		op, _ := lib.LastPrice(contract.Position, token)
 		fmt.Printf("%s %d %s %.2f %.2f\n", contract.Underlying, int(contract.K), contract.Type, contract.TtmInDays/365.0, op)
