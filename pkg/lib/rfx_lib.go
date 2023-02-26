@@ -214,6 +214,13 @@ func mapOptions(key string) []string {
 	mapForOptions["TRI.ROS"] = append(mapForOptions["TRI.ROS"], `^TRI.ROS.*P$`)
 	mapForOptions["TRI.ROS"] = append(mapForOptions["TRI.ROS"], `^TRI.ROS.*C$`)
 
+	mapForOptions["DLR"] = append(mapForOptions["DLR"], `^DLR.*P$`)
+	mapForOptions["DLR"] = append(mapForOptions["DLR"], `^DLR.*C$`)
+
+	mapForOptions["GIR.ROS"] = append(mapForOptions["GIR.ROS"], `^GIR.ROS.*P$`)
+	mapForOptions["GIR.ROS"] = append(mapForOptions["GIR.ROS"], `^GIR.ROS.*C$`)
+
+
 	return mapForOptions[key]
 }
 
