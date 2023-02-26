@@ -74,7 +74,6 @@ func main() {
 	}
 
 
-	panic("")
 
 	token := lib.Login()
 	allInstruments, _ := lib.GetAllInstruments(token)
@@ -82,9 +81,9 @@ func main() {
 		fmt.Println(inst)
 	}
 
-	optionContracts := lib.AllOptionsContract("GIR.ROS", allInstruments)
+	optionContracts := lib.AllOptionsContract("SOJ.ROS", allInstruments)
 	for _, contract := range optionContracts {
-		op, _ := lib.LastPrice(contract.Position, token)
+		op, _ := lib.LastPrice(contract.Underlying, token)
 		fmt.Printf("%s %.2f %.2f\n", contract.Position, contract.TtmInDays/365.0, op)
 	}
 	panic("")

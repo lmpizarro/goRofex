@@ -184,7 +184,6 @@ type OptionParameters struct {
 func parseOptionContract(e string) optionContract {
 	split1 := strings.Split(e, "/")
 	split2 := strings.Split(split1[1], " ")
-	especie := split1[0]
 	fecha := split2[0]
 	month := fecha[0:3]
 	year := "20" + fecha[3:5]
@@ -195,7 +194,7 @@ func parseOptionContract(e string) optionContract {
 	_, secondsTtm := ParserStringDate(maturityDate)
 	ttmInDays := TtmInDays(secondsTtm)
 
-	return optionContract{Underlying: especie,
+	return optionContract{Underlying: strings.Split(e, " ")[0],
 						Position:e, K: K,
 						Type: tipo, MaturityDate: maturityDate,
 						TtmInDays: ttmInDays,}
