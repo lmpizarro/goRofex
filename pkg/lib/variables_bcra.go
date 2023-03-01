@@ -31,7 +31,6 @@ func Cer(fechaDesde, fechaHasta string){
 	form.Add("detalle", "CER (Base 2.2.2002=1)")
 	r.URL.RawQuery = form.Encode()
 
-
 	client := &http.Client{}
 	res, err := client.Do(r)
 	if err != nil {
