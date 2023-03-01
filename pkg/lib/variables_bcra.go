@@ -14,8 +14,6 @@ func hacerFecha(fecha string) string {
 }
 
 func Cer(fechaDesde, fechaHasta string){
-	fechaHasta = hacerFecha(fechaHasta)
-	fechaDesde = hacerFecha(fechaDesde)
 	r, err := http.NewRequest("POST", myurl, nil)
 
 	if err != nil {
@@ -23,8 +21,8 @@ func Cer(fechaDesde, fechaHasta string){
 	}
 	form := r.URL.Query()
 	form.Add("primeravez", "1")
-	form.Add("fecha_desde", fechaDesde)
-	form.Add("fecha_hasta", fechaHasta)
+	form.Add("fecha_desde", hacerFecha(fechaDesde))
+	form.Add("fecha_hasta", hacerFecha(fechaHasta))
 	form.Add("serie", "3540")
 	form.Add("serie1", "0")
 	form.Add("serie2", "0")
