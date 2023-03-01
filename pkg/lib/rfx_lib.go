@@ -167,19 +167,18 @@ func LastPrice(ticker, token string) (float64, error) {
 }
 
 type optionContract struct {
-	Underlying    string
-	Position      string
-	K             float64
-	Type          string
-	MaturityDate  string
-	TtmInDays     float64
+	Underlying   string
+	Symbol       string
+	K            float64
+	Type         string
+	MaturityDate string
+	TtmInDays    float64
 }
 
 type OptionParameters struct {
 	Tipo                 string
 	S, K, T, R, Sigma, Q float64
 }
-
 
 func parseOptionContract(e string) optionContract {
 	split1 := strings.Split(e, "/")
@@ -195,11 +194,10 @@ func parseOptionContract(e string) optionContract {
 	ttmInDays := TtmInDays(secondsTtm)
 
 	return optionContract{Underlying: strings.Split(e, " ")[0],
-						Position:e, K: K,
-						Type: tipo, MaturityDate: maturityDate,
-						TtmInDays: ttmInDays,}
+		Symbol: e, K: K,
+		Type: tipo, MaturityDate: maturityDate,
+		TtmInDays: ttmInDays}
 }
-
 
 func mapOptions(key string) []string {
 	mapForOptions := make(map[string][]string)
@@ -218,7 +216,6 @@ func mapOptions(key string) []string {
 
 	mapForOptions["GIR.ROS"] = append(mapForOptions["GIR.ROS"], `^GIR.ROS.*P$`)
 	mapForOptions["GIR.ROS"] = append(mapForOptions["GIR.ROS"], `^GIR.ROS.*C$`)
-
 
 	return mapForOptions[key]
 }
