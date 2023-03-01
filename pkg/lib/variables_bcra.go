@@ -50,7 +50,7 @@ func Cer(fechaDesde, fechaHasta string){
 	if err != nil {
 		panic("-....-...._")
 	}
- 	// Find the review items
+ 	// busca el par fecha cer
   	doc.Find("tbody tr").Each(func(i int, tr *goquery.Selection) {
 		tr.Find("td").Each(func(ix int, td *goquery.Selection) {
 			switch ix {
