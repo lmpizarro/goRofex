@@ -28,9 +28,9 @@ func scan() {
 
 func main() {
 
-	lib.DatosBadlarEA.FechaHasta = "2023-02-21"
-	lib.DatosBadlarEA.FechaDesde = "2022-02-21"
-	lib.DatosBCRA(lib.DatosBadlarEA)
+	lib.DatosCer.FechaHasta = "2023-02-21"
+	lib.DatosCer.FechaDesde = "2022-02-21"
+	lib.DatosBCRA(lib.DatosCer)
 	panic("")
 	// go scan()
 	// fmt.Scanln()
