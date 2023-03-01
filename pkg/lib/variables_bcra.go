@@ -13,7 +13,8 @@ const myUrl = "https://www.bcra.gob.ar/PublicacionesEstadisticas/Principales_var
 type FuenteDatos struct {
 	Serie   string
 	Detalle string
-	Fecha string
+	FechaHasta string
+	FechaDesde string
 }
 
 var DatosCer = FuenteDatos{Serie: "3540", Detalle: "CER (Base 2.2.2002=1)"}
@@ -25,7 +26,7 @@ func hacerFecha(fecha string) string {
 	return fmt.Sprintf("%v%v%v", splitD[0], splitD[1], splitD[2])
 }
 
-func DatosBCRA(fechaDesde, fechaHasta string, service FuenteDatos) {
+func DatosBCRA(service FuenteDatos) {
 	r, err := http.NewRequest("POST", myUrl, nil)
 	if err != nil {
 		panic(err)
@@ -33,8 +34,8 @@ func DatosBCRA(fechaDesde, fechaHasta string, service FuenteDatos) {
 
 	form := r.URL.Query()
 	form.Add("primeravez", "1")
-	form.Add("fecha_desde", hacerFecha(fechaDesde))
-	form.Add("fecha_hasta", hacerFecha(fechaHasta))
+	form.Add("fecha_desde", hacerFecha(service.FechaDesde))
+	form.Add("fecha_hasta", hacerFecha(service.FechaHasta))
 	form.Add("serie", service.Serie)
 	form.Add("serie1", "0")
 	form.Add("serie2", "0")
