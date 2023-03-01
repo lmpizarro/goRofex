@@ -28,8 +28,8 @@ func scan() {
 
 func main() {
 
-
-	lib.Cer("2022-08-02", "2023-02-21")
+	lib.DatosBadlarEA.Fecha = ""
+	lib.DatosBCRA("2022-08-02", "2023-02-21", lib.DatosBadlarEA)
 	panic("")
 	// go scan()
 	// fmt.Scanln()

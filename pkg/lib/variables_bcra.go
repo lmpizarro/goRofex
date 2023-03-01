@@ -1,19 +1,32 @@
 package lib
 
-import "github.com/PuerkitoBio/goquery"
-import "strings"
-import "net/http"
-import "fmt"
+import (
+	"fmt"
+	"net/http"
+	"strings"
 
-const myurl = "https://www.bcra.gob.ar/PublicacionesEstadisticas/Principales_variables_datos.asp"
+	"github.com/PuerkitoBio/goquery"
+)
+
+const myUrl = "https://www.bcra.gob.ar/PublicacionesEstadisticas/Principales_variables_datos.asp"
+
+type FuenteDatos struct {
+	Serie   string
+	Detalle string
+	Fecha string
+}
+
+var DatosCer = FuenteDatos{Serie: "3540", Detalle: "CER (Base 2.2.2002=1)"}
+
+var DatosBadlarEA = FuenteDatos{Serie: "7935", Detalle: "BADLAR en pesos de bancos privados (en  e.a.)"}
 
 func hacerFecha(fecha string) string {
-	splitD:= strings.Split(fecha, "-")
+	splitD := strings.Split(fecha, "-")
 	return fmt.Sprintf("%v%v%v", splitD[0], splitD[1], splitD[2])
 }
 
-func Cer(fechaDesde, fechaHasta string){
-	r, err := http.NewRequest("POST", myurl, nil)
+func DatosBCRA(fechaDesde, fechaHasta string, service FuenteDatos) {
+	r, err := http.NewRequest("POST", myUrl, nil)
 	if err != nil {
 		panic(err)
 	}
@@ -22,12 +35,12 @@ func Cer(fechaDesde, fechaHasta string){
 	form.Add("primeravez", "1")
 	form.Add("fecha_desde", hacerFecha(fechaDesde))
 	form.Add("fecha_hasta", hacerFecha(fechaHasta))
-	form.Add("serie", "3540")
+	form.Add("serie", service.Serie)
 	form.Add("serie1", "0")
 	form.Add("serie2", "0")
 	form.Add("serie3", "0")
 	form.Add("serie4", "0")
-	form.Add("detalle", "CER (Base 2.2.2002=1)")
+	form.Add("detalle", service.Detalle)
 	r.URL.RawQuery = form.Encode()
 
 	client := &http.Client{}
@@ -45,14 +58,14 @@ func Cer(fechaDesde, fechaHasta string){
 	if err != nil {
 		panic("-....-...._")
 	}
- 	// busca el par fecha cer
-  	doc.Find("tbody tr").Each(func(i int, tr *goquery.Selection) {
+	// busca el par fecha cer
+	doc.Find("tbody tr").Each(func(i int, tr *goquery.Selection) {
 		tr.Find("td").Each(func(ix int, td *goquery.Selection) {
 			switch ix {
-				case 0:
-					fmt.Printf("%v ",  td.Text())
-				case 1:
-					fmt.Printf("%v \n", strings.TrimSpace(td.Text()))
+			case 0:
+				fmt.Printf("%v ", td.Text())
+			case 1:
+				fmt.Printf("%v \n", strings.TrimSpace(td.Text()))
 			}
 		})
 	})
