@@ -28,22 +28,26 @@ func scan() {
 
 func main() {
 
+
+	lib.Cer()
+	panic("")
 	// go scan()
 	// fmt.Scanln()
 	// panic("")
 
-	lib.TestCer()
-	panic("")
+	// lib.TestCer()
+	// panic("")
 	token := lib.Login()
 	allInstruments, _ := lib.GetAllInstruments(token)
-	for _, inst := range allInstruments {
-		fmt.Println(inst)
-	}
 
 	optionContracts := lib.AllOptionsContract("SOJ.ROS", allInstruments)
 	for _, contract := range optionContracts {
 		op, _ := lib.LastPrice(contract.Underlying, token)
-		fmt.Printf("%s %.2f %.2f %.2f\n", contract.Position, contract.TtmInDays/365.0, op, contract.K/op)
+		fmt.Printf("%s %.2f %.2f \n", contract.Symbol, contract.TtmInDays/365.0, op)
+		cp, _ := lib.LastPrice(contract.Symbol, token)
+		if cp != 0.0 {
+			fmt.Println("cp ", cp)
+		}
 	}
 	panic("")
 	map_messages, _ := lib.Build_messages("GGAL/FEB23", lib.Login())
