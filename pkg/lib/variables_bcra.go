@@ -6,14 +6,16 @@ import "strings"
 import "net/http"
 import "fmt"
 
+const   myurl = "https://www.bcra.gob.ar/PublicacionesEstadisticas/Principales_variables_datos.asp"
+
+func hacerFecha(fecha string) string {
+	splitD:= strings.Split(fecha, "-")
+	return fmt.Sprintf("%v%v%v", splitD[0], splitD[1], splitD[2])
+}
+
 func Cer(fechaDesde, fechaHasta string){
-	splitDesde := strings.Split(fechaDesde, "-")
-	splitHasta := strings.Split(fechaHasta, "-")
-
-	fechaDesde = fmt.Sprintf("%v%v%v", splitDesde[0], splitDesde[1], splitDesde[2])
-	fechaHasta = fmt.Sprintf("%v%v%v", splitHasta[0], splitHasta[1], splitHasta[2])
-
-    myurl := "https://www.bcra.gob.ar/PublicacionesEstadisticas/Principales_variables_datos.asp"
+	fechaHasta = hacerFecha(fechaHasta)
+	fechaDesde = hacerFecha(fechaDesde)
 	r, err := http.NewRequest("POST", myurl, nil)
 
 	if err != nil {
