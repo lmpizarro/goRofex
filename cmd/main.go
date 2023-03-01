@@ -29,7 +29,7 @@ func scan() {
 func main() {
 
 
-	lib.Cer()
+	lib.Cer("2022-08-02", "2023-02-21")
 	panic("")
 	// go scan()
 	// fmt.Scanln()
