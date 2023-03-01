@@ -52,8 +52,6 @@ func Cer(fechaDesde, fechaHasta string){
 	}
  	// Find the review items
   	doc.Find("tbody tr").Each(func(i int, tr *goquery.Selection) {
-		// For each item found, get the title
-
 		tr.Find("td").Each(func(ix int, td *goquery.Selection) {
 			switch ix {
 				case 0:
