@@ -1,7 +1,6 @@
 package lib
 
 import "github.com/PuerkitoBio/goquery"
-import "encoding/json"
 import "strings"
 import "net/http"
 import "fmt"
@@ -41,10 +40,6 @@ func Cer(fechaDesde, fechaHasta string){
 	if res.StatusCode != http.StatusOK {
 		panic(res.StatusCode)
 	}
-
-	var resp map[string]interface{}
-
-    json.NewDecoder(res.Body).Decode(&resp)
 
 	doc, err := goquery.NewDocumentFromReader(res.Body)
 	if err != nil {
