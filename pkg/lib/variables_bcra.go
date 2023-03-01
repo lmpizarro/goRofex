@@ -5,7 +5,7 @@ import "strings"
 import "net/http"
 import "fmt"
 
-const   myurl = "https://www.bcra.gob.ar/PublicacionesEstadisticas/Principales_variables_datos.asp"
+const myurl = "https://www.bcra.gob.ar/PublicacionesEstadisticas/Principales_variables_datos.asp"
 
 func hacerFecha(fecha string) string {
 	splitD:= strings.Split(fecha, "-")
@@ -14,10 +14,10 @@ func hacerFecha(fecha string) string {
 
 func Cer(fechaDesde, fechaHasta string){
 	r, err := http.NewRequest("POST", myurl, nil)
-
 	if err != nil {
 		panic(err)
 	}
+
 	form := r.URL.Query()
 	form.Add("primeravez", "1")
 	form.Add("fecha_desde", hacerFecha(fechaDesde))
@@ -56,5 +56,4 @@ func Cer(fechaDesde, fechaHasta string){
 			}
 		})
 	})
-
 }
