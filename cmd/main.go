@@ -26,11 +26,11 @@ func scan() {
 	}
 }
 
+
 func main() {
 
-	lib.DatosCer.FechaHasta = "2023-02-21"
-	lib.DatosCer.FechaDesde = "2022-02-21"
-	lib.DatosBCRA(lib.DatosCer)
+
+	lib.DatosBCRA(lib.SetDataSource("2022-02-21", "2023-02-21", "cer"))
 	panic("")
 	// go scan()
 	// fmt.Scanln()

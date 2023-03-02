@@ -21,6 +21,26 @@ var DatosCer = FuenteDatos{Serie: "3540", Detalle: "CER (Base 2.2.2002=1)"}
 
 var DatosBadlarEA = FuenteDatos{Serie: "7935", Detalle: "BADLAR en pesos de bancos privados (en  e.a.)"}
 
+var DatosA3500 = FuenteDatos{Serie: "272", Detalle: "Tipo de Cambio Mayorista ($ por US$) Comunicación A 3500 - Referencia"}
+
+func SetDataSource(fechaDesde, fechaHasta, fuente string) FuenteDatos {
+
+	var s FuenteDatos
+	if fuente == "cer" {
+		s = DatosCer
+	} else if fuente == "badlarEA"{
+		s = DatosBadlarEA
+	} else if fuente == "a3500" {
+		s = DatosA3500
+	} else {
+		panic("not yet ready")
+	}
+	s.FechaDesde = fechaDesde
+	s.FechaHasta = fechaHasta
+
+	return s
+}
+
 func hacerFecha(fecha string) string {
 	splitD := strings.Split(fecha, "-")
 	return fmt.Sprintf("%v%v%v", splitD[0], splitD[1], splitD[2])
