@@ -12,9 +12,8 @@ func scan() {
 	token := lib.Login()
 	for {
 		fmt.Println("--- ", time.Now().Second())
-		for _, ticker := range []string{"DLR/FEB23", "DLR/MAR23",
-			"DLR/ABR23", "DLR/MAY23", "DLR/JUN23",
-			"DLR/JUL23", "DLR/AGO23", "DLR/SEP23",
+		for _, ticker := range []string{
+			"DLR/AGO23", "DLR/SEP23",
 			"DLR/NOV23", "DLR/DIC23", "DLR/ENE24",
 		} {
 			cl, _ := lib.LastPrice(ticker, token)
@@ -31,12 +30,12 @@ func main() {
 
 
 	lib.DatosBCRA(lib.SetDataSource("2022-02-21", "2023-02-21", "cer"))
-	panic("")
+	//panic("")
 	// go scan()
 	// fmt.Scanln()
 	// panic("")
 
-	// lib.TestCer()
+	lib.TestCashFlow()
 	// panic("")
 	token := lib.Login()
 	allInstruments, _ := lib.GetAllInstruments(token)
@@ -50,8 +49,8 @@ func main() {
 			fmt.Println("cp ", cp)
 		}
 	}
-	panic("")
-	map_messages, _ := lib.Build_messages("GGAL/FEB23", lib.Login())
+
+	map_messages, _ := lib.Build_messages("GGAL/DIC23", lib.Login())
 
 	for k := range map_messages {
 		fmt.Println(k, ".... ", map_messages[k])

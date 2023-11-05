@@ -1,4 +1,6 @@
 env.csv
 *.txt
 *.gnumeric
+*.csv
+*.json
 

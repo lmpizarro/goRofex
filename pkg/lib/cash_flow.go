@@ -12,9 +12,11 @@ type CashFlow struct {
 	cash  []float64
 	dates []string
 	name  string
+	Irr float64
+	Rate float64
 }
 
-func Irrs(c *CashFlow) (float64, float64) {
+func Irrs(c *CashFlow) {
 
 	var dates []time.Time
 	for _, date := range c.dates {
@@ -25,30 +27,37 @@ func Irrs(c *CashFlow) (float64, float64) {
 	r1, _ := fin.InternalRateOfReturn(c.cash, .1)
 	r2, _ := fin.ScheduledInternalRateOfReturn(c.cash, dates, 1)
 
-	return r1, r2
+	c.Irr = r2
+	c.Rate = r1
+
 }
 
 func TestCashFlow() {
-	begin_date := "2023-02-27"
-	cfs := []CashFlow{{cash: []float64{-93.7, 100.0}, name: "S31M3",
-		dates: []string{begin_date, "2023-03-31"}},
-		{cash: []float64{-88.25, 100.0}, name: "S28A3",
-			dates: []string{begin_date, "2023-04-28"}},
-		{cash: []float64{-81.98, 100.0}, name: "S31Y3",
-			dates: []string{begin_date, "2023-05-31"}},
-		{cash: []float64{-76.98, 100.0}, name: "S30J3",
-			dates: []string{begin_date, "2023-06-30"}},
-		// 31/08/2022 101 55.5275  78,6758
-		{cash: []float64{-139.5, 174.29}, name: "X16J3",
-			dates: []string{begin_date, "2023-06-16"}},
-	}
+	begin_date := "2023-03-07"
+	s31m3 := CashFlow{cash: []float64{-95.1, 100.0}, name: "S31M3",
+		dates: []string{begin_date, "2023-03-31"}}
+
+	s28a3 := CashFlow{cash: []float64{-89.17, 100.0}, name: "S28A3",
+		dates: []string{begin_date, "2023-04-28"}}
+
+	s31y3 := CashFlow{cash: []float64{-82.97, 100.0}, name: "S31Y3",
+		dates: []string{begin_date, "2023-05-31"}}
+
+	s30j3 := CashFlow{cash: []float64{-77.75, 100.0}, name: "S30J3",
+		dates: []string{begin_date, "2023-06-30"}}
+		
+	x16j3 := CashFlow{cash: []float64{-142.5, 144.5}, name: "X16J3",
+		dates: []string{begin_date, "2023-06-16"}}
+
+	cfs := []CashFlow{s31m3, s28a3, s31y3, s30j3, x16j3}
 
 	for _, cf := range cfs {
-		r1, r2 := Irrs(&cf)
-		fmt.Println(r1, r2)
+		Irrs(&cf)
+		fmt.Println(cf.Irr, cf.Rate, cf.name)
 	}
 }
 
+// TimeFactor in years
 type RateTerm struct {
 	Rate       float64
 	TimeFactor float64
@@ -67,14 +76,14 @@ func modeloCer(cer0, cer1 float64, term RateTerm) float64 {
 	return math.Exp(term.TimeFactor*term.Rate) * cer1 / cer0
 }
 
-func DiscountFactor(t, r float64, c string) float64 {
+func DiscountFactor(rt * RateTerm, c string) float64 {
 	var df float64
 	if c == "simp" {
-		df =  1.0 / (1.0 + r*t)
+		df =  1.0 / (1.0 + rt.Rate*rt.TimeFactor)
 	} else if c == "comp" {
-		df =  math.Pow(1.0 + r, t)
+		df =  math.Pow(1.0 + rt.Rate, rt.TimeFactor)
 	} else if c == "cont" {
-		df =  math.Exp(-r*t)
+		df =  math.Exp(-rt.Rate*rt.TimeFactor)
 	}
 	return df
 }
@@ -84,8 +93,8 @@ func ForwardRate(term1, term2 RateTerm, c string) (float64, error){
 		return 0.0, fmt.Errorf("error")
 	}
 	var fr float64
-	df1 := DiscountFactor(term1.TimeFactor, term1.Rate, c)
-	df2 := DiscountFactor(term2.TimeFactor, term2.Rate, c)
+	df1 := DiscountFactor(&term1, c)
+	df2 := DiscountFactor(&term2, c)
 	time_diff := term2.TimeFactor - term1.TimeFactor
 	if c == "simp" {
 		fr =  ((df1/df2) - 1) / time_diff
